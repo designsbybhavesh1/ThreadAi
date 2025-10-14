@@ -1,0 +1,337 @@
+<!-- public/popup/popup.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="popup.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <title>ThreadAi</title>
+    <style>
+        .progress-container {
+            width: 90%;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 12px 0;
+        }
+        .progress-bar-wrapper {
+            flex-grow: 1;
+            height: 8px;
+            background-color: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            width: 0%;
+            height: 100%;
+            background-color: #1a73e8;
+            border-radius: 4px;
+            transition: width 0.2s ease-in-out;
+        }
+        .progress-text {
+            font-size: 12px;
+            color: #5f6368;
+            min-width: 35px;
+            text-align: right;
+        }
+        .download-note {
+            font-size: 11px;
+            color: #5f6368;
+            margin-top: 4px;
+        }
+        
+        /* AI Status Badge Styles */
+        .status-badge {
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .status-checking {
+            background: #f3f4f6;
+            color: #6b7280;
+            animation: pulse 2s infinite;
+        }
+        
+        .status-not-ready {
+            background: #fef3c7;
+            color: #d97706;
+        }
+        
+        .status-downloading {
+            background: #dbeafe;
+            color: #2563eb;
+            animation: pulse 2s infinite;
+        }
+        
+        .status-initializing {
+            background: #fde68a;
+            color: #d97706;
+            animation: pulse 1.5s infinite;
+        }
+        
+        .status-ready {
+            background: #d1fae5;
+            color: #059669;
+        }
+        
+        .status-error {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* Info button with subtle notification dot */
+        .info-btn {
+            position: relative;
+        }
+        
+        .info-dot {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            width: 6px;
+            height: 6px;
+            background: #6b7280;
+            border-radius: 50%;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .info-dot.show {
+            opacity: 1;
+            animation: subtle-blink 3s ease-in-out infinite;
+        }
+        
+        @keyframes subtle-blink {
+            0%, 70%, 100% { opacity: 0.6; }
+            35% { opacity: 0.2; }
+        }
+
+
+
+        /* Performance Info Modal */
+        .info-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .info-modal-content {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            max-width: 320px;
+            margin: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+        
+        .info-modal h3 {
+            margin: 0 0 16px 0;
+            color: #1f2937;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .info-modal p {
+            margin: 0 0 16px 0;
+            color: #6b7280;
+            line-height: 1.5;
+            font-size: 14px;
+        }
+        
+        .info-modal-close {
+            background: #1a73e8;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .info-modal-close:hover {
+            background: #1557b0;
+        }
+
+
+
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header Section -->
+        <header class="header">
+            <div class="header-content">
+                <h1 class="app-title">ThreadAi</h1>
+                <div class="header-meta">
+                    <span class="status-badge status-checking" id="statusBadge">Checking...</span>
+                    <button class="btn-icon info-btn" id="infoBtn" title="Performance Info">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="16" x2="12" y2="12"></line>
+                            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                        </svg>
+                        <span class="info-dot" id="infoDot"></span>
+                    </button>
+                    <button class="btn-icon" id="settingsBtn" title="Settings">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Loading State -->
+            <div class="state-view" id="loadingView" style="display: none;">
+                <div class="spinner"></div>
+                <p class="loading-text" id="loadingText">Initializing...</p>
+            </div>
+
+            <!-- Error State -->
+            <div class="state-view" id="errorView" style="display: none;">
+                <div class="error-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                </div>
+                <p class="error-text" id="errorText"></p>
+                <button class="btn btn-secondary" id="retryBtn" style="display: none;">Try Again</button>
+            </div>
+
+            <!-- Model Download State -->
+            <div class="state-view" id="downloadView" style="display: none;">
+                <div class="empty-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                </div>
+                <h2>AI Model Required</h2>
+                <p id="downloadInfoText">Download the AI model (~500 MB) to start using ThreadAi. This is a one-time setup.</p>
+
+                <div class="progress-container" id="progressContainer" style="display: none;">
+                    <div class="progress-bar-wrapper">
+                        <div class="progress-bar" id="progressBar"></div>
+                    </div>
+                    <span class="progress-text" id="progressText">0%</span>
+                </div>
+                
+                <!-- General download info banner -->
+                <div class="download-info-banner" id="downloadInfoBanner" style="display: none;">
+                    <div class="info-icon">ℹ️</div>
+                    <div class="info-content">
+                        <div class="info-title">Download in Progress</div>
+                        <div class="info-text">This may take a few minutes. You can close the extension - progress will be saved and we'll notify you when it's ready.</div>
+                    </div>
+                </div>
+                
+                <p class="download-note" id="downloadNote" style="display: none;">Download continues in background. You can close this window.</p>
+
+                <button class="btn btn-primary" id="downloadBtn">Download AI Model</button>
+            </div>
+
+            <!-- Model Initializing State -->
+            <div class="state-view" id="initializingView" style="display: none;">
+                <div class="spinner"></div>
+                <h2 class="loading-text">Almost there!</h2>
+                <p class="loading-text" style="margin-top: 8px;">The AI model is being prepared by your browser.</p>
+                <p class="download-note" style="margin-top: 16px;">
+                    This can take a few moments. You can safely close this window — we'll send a notification when it's ready.
+                </p>
+            </div>
+
+            <!-- Empty State (Initial View) -->
+            <div class="state-view" id="emptyView">
+                <div class="empty-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                </div>
+                <h2>Analyze This Thread</h2>
+                <p>Get key points and insights instantly with Chrome's built-in AI.</p>
+                <button class="btn btn-primary" id="analyzeBtn">Summarize Thread</button>
+            </div>
+
+            <!-- Summary Result View -->
+            <div class="state-view" id="summaryView" style="display: none;">
+                <div class="summary-section">
+                    <h2>Key Points</h2>
+                    <ul class="key-points-list" id="keyPointsList"></ul>
+                </div>
+
+                <div class="summary-section">
+                    <h2>Notable Quotes</h2>
+                    <ul class="quotes-list" id="quotesList"></ul>
+                </div>
+
+                <div class="reply-options">
+                    <label for="toneSelector" class="reply-options-label">Tone:</label>
+                    <select id="toneSelector" class="dropdown">
+                        <option value="casual" selected>Casual</option>
+                        <option value="professional">Professional</option>
+                        <option value="witty">Witty</option>
+                        <option value="friendly">Friendly</option>
+                    </select>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn btn-primary" id="generateReplyBtn">Generate Reply</button>
+                    <button class="btn btn-secondary" id="copySummaryBtn">Copy Summary</button>
+                </div>
+
+                <!-- Reply Result Section -->
+                <div class="reply-section" id="replySection" style="display: none;">
+                    <h2>Generated Reply</h2>
+                    <div class="reply-content" id="replyContent"></div>
+                    <button class="btn btn-secondary" id="copyReplyBtn">Copy Reply</button>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer with Subscription Status -->
+        <footer class="footer">
+            <div class="footer-content">
+                <div class="subscription-status" id="subscriptionStatus" style="display: none;">
+                    <span class="subscription-badge" id="subscriptionBadge"></span>
+                    <span class="subscription-text" id="subscriptionText"></span>
+                </div>
+                <div class="subscription-actions" id="subscriptionActions" style="display: none;">
+                    <button class="btn btn-secondary" id="upgradeBtn">Upgrade</button>
+                    <button class="btn btn-link" id="restoreBtn">Restore</button>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- Performance Info Modal -->
+    <div class="info-modal" id="infoModal">
+        <div class="info-modal-content">
+            <h3>⚡ Performance Info</h3>
+            <p>The first-time summarization may take longer as your device initializes the AI model. After the first use, processing will be lightning fast!</p>
+            <p>This is normal and depends on your device performance. Subsequent summaries and replies will be much quicker.</p>
+            <button class="info-modal-close" id="infoModalClose">Got it!</button>
+        </div>
+    </div>
+
+    <script type="module" src="popup.js"></script>
+</body>
+</html>
