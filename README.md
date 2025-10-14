@@ -22,7 +22,7 @@ it's a request.
 - 💬 Generates quick, natural AI-powered replies  
 - ✨ Highlights key quotes and insights  
 - ⚡ Works locally with Chrome’s built-in AI — no external API needed  
-- 💾 Saves summaries using Chrome’s local storage
+- 💾 Customize reply generation by custom prompt and key point styles
 - 💡 Trial abuse prevention using backend - max can install 2 times and use free trial , third time user will not able to use free trial
 
 ---
