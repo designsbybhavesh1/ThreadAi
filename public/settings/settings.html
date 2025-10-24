@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ThreadAi - Settings</title>
+    <link rel="stylesheet" href="settings.css">
+</head>
+
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-content">
+                <h1 class="title">⚙️ ThreadAi Settings</h1>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <!-- Subscription Status - Compact -->
+            <section class="subscription-section">
+                <div class="subscription-card" id="subscriptionCard">
+                    <!-- Premium Subscription Info -->
+                    <div class="subscription-premium" id="subscriptionPremium" style="display: none;">
+                        <div class="sub-info">
+                            <span class="status-badge active">Premium Active</span>
+                            <span class="plan-name" id="subscriptionPlan">Pro Monthly</span>
+                        </div>
+                        <div class="sub-actions">
+                            <button class="btn-sm btn-secondary" id="cancelBtn">Cancel</button>
+                            <button class="btn-sm btn-primary" id="manageBtn">Manage</button>
+                        </div>
+                    </div>
+
+                    <!-- Trial Info -->
+                    <div class="subscription-trial" id="subscriptionTrial" style="display: none;">
+                        <div class="sub-info">
+                            <span class="status-badge trial">Free Trial</span>
+                            <span class="trial-time" id="trialTime">3 days left</span>
+                        </div>
+                        <div class="sub-actions">
+                            <button class="btn-sm btn-primary" id="upgradeBtn">Upgrade</button>
+                            <button class="btn-sm btn-secondary" id="restoreBtn">Restore</button>
+                        </div>
+                    </div>
+
+                    <!-- Expired/No Subscription -->
+                    <div class="subscription-expired" id="subscriptionExpired" style="display: none;">
+                        <div class="sub-info">
+                            <span class="status-badge expired">Trial Expired</span>
+                        </div>
+                        <div class="sub-actions">
+                            <button class="btn-sm btn-primary" id="upgradeBtn2">Upgrade</button>
+                            <button class="btn-sm btn-secondary" id="restoreBtn2">Restore</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings Grid - No Scrolling -->
+            <div class="settings-grid">
+                <!-- Settings in 2-column grid -->
+                <div class="setting-card">
+                    <div class="card-header">
+                        <h3>📝 Summary</h3>
+                    </div>
+                    <div class="setting-item">
+                        <label>Key Points Style</label>
+                        <select id="keyPointsStyle" class="compact-select">
+                            <option value="default">Smart</option>
+                            <option value="oneline">Concise</option>
+                            <option value="brief">Brief</option>
+                        </select>
+                    </div>
+                    <div class="setting-item">
+                        <label>Processing Speed</label>
+                        <select id="processingSpeed" class="compact-select">
+                            <option value="fast">Fast</option>
+                            <option value="balanced">Balanced</option>
+                            <option value="quality">Quality</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="setting-card">
+                    <div class="card-header">
+                        <h3>💬 Reply Generation</h3>
+                    </div>
+                    <div class="setting-item">
+                        <label>Reply Mode</label>
+                        <select id="replyMode" class="compact-select">
+                            <option value="tone">Tone Settings</option>
+                            <option value="custom">Custom Prompt</option>
+                        </select>
+                    </div>
+                    <div class="setting-item">
+                        <label>Extension Length</label>
+                        <select id="replyLength" class="compact-select">
+                            <option value="short">Short</option>
+                            <option value="medium">Medium</option>
+                            <option value="default">Flexible</option>
+                        </select>
+                    </div>
+                    <div class="setting-item">
+                        <label>Inline Length</label>
+                        <select id="inlineReplyLength" class="compact-select">
+                            <option value="short">Short</option>
+                            <option value="medium">Medium</option>
+                            <option value="default">Flexible</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="setting-card">
+                    <div class="card-header">
+                        <h3>🎨 Interface</h3>
+                    </div>
+                    <div class="setting-item toggle-item">
+                        <label>Inline Reply Buttons</label>
+                        <div class="toggle-switch">
+                            <input type="checkbox" id="showInlineButtons" class="toggle-input">
+                            <span class="toggle-slider"></span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Custom Prompt Section (Expandable) -->
+            <section class="custom-prompt-section" id="customPromptGroup" style="display: none;">
+                <div class="prompt-card">
+                    <h3>✏️ Custom Reply Prompt</h3>
+                    <textarea id="customPrompt" class="prompt-textarea" rows="3"
+                        placeholder="Example: Reply with enthusiasm and add insights. Keep it professional but friendly."></textarea>
+                    <div class="prompt-examples">
+                        <strong>Examples:</strong>
+                        <span>"Reply with enthusiasm and add insights"</span> •
+                        <span>"Be professional but friendly"</span> •
+                        <span>"Use witty tone with questions"</span>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <div class="footer-actions">
+                <button id="resetBtn" class="btn-secondary">Reset</button>
+                <button id="saveBtn" class="btn-primary">Save Settings</button>
+            </div>
+        </footer>
+    </div>
+
+    <div id="notification" class="notification"></div>
+    <script type="module" src="settings.js"></script>
+</body>
+
+</html>
